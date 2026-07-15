@@ -3,6 +3,7 @@ import '@fontsource-variable/karla';
 import './css/app.css';
 
 import { cargarMochilas } from './catalogo/cargar.js';
+import { cargarPiezas } from './hilo/cargar.js';
 import { wa } from './config.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -124,4 +125,89 @@ if (!mochilas.length) {
   lista.append(li);
 } else {
   lista.append(...mochilas.map(tarjeta));
+}
+
+// --- el hilo: videos y fotos que se van sumando --------------------------
+// El video no carga nada de YouTube hasta que se toca: primero es solo la
+// miniatura (una imagen) con el boton de play. Al tocar, entra el iframe de
+// youtube-nocookie con autoplay.
+const piezas = cargarPiezas();
+const hiloLista = $('#hilo-lista');
+
+function tarjetaPieza(pz) {
+  const li = document.createElement('li');
+  li.className = 'pieza';
+
+  const marco = document.createElement('div');
+  marco.className = 'pieza-marco';
+
+  if (pz.youtube) {
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = 'pieza-video';
+    boton.setAttribute('aria-label', `Ver el video: ${pz.titulo}`);
+    const img = document.createElement('img');
+    img.src = `https://i.ytimg.com/vi/${pz.youtube}/hqdefault.jpg`;
+    img.alt = '';
+    img.loading = 'lazy';
+    const play = document.createElement('span');
+    play.className = 'pieza-play';
+    play.setAttribute('aria-hidden', 'true');
+    boton.append(img, play);
+    boton.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://www.youtube-nocookie.com/embed/${pz.youtube}?autoplay=1`;
+      iframe.title = pz.titulo;
+      iframe.allow = 'autoplay; encrypted-media; picture-in-picture';
+      iframe.allowFullscreen = true;
+      marco.replaceChildren(iframe);
+    });
+    marco.append(boton);
+  } else if (pz.foto) {
+    const img = document.createElement('img');
+    img.src = pz.foto;
+    img.alt = pz.titulo;
+    img.loading = 'lazy';
+    marco.append(img);
+  } else {
+    const vacio = document.createElement('div');
+    vacio.className = 'sin-foto';
+    const p = document.createElement('p');
+    p.append(texto('Falta el video o la foto'));
+    const c = document.createElement('code');
+    c.append(texto(`hilo/${pz.id}/pieza.json`));
+    vacio.append(p, c);
+    marco.append(vacio);
+  }
+
+  const pie = document.createElement('div');
+  pie.className = 'pieza-pie';
+
+  const tipo = document.createElement('span');
+  tipo.className = 'pieza-tipo';
+  tipo.append(texto(pz.youtube ? 'Video' : 'Foto'));
+
+  const h3 = document.createElement('h3');
+  h3.append(texto(pz.titulo));
+  pie.append(tipo, h3);
+
+  if (pz.nota) {
+    const p = document.createElement('p');
+    p.append(texto(pz.nota));
+    pie.append(p);
+  }
+
+  li.append(marco, pie);
+  return li;
+}
+
+if (!piezas.length) {
+  const li = document.createElement('li');
+  li.className = 'aviso';
+  li.append(
+    texto('Todavía no hay videos ni fotos. Crea una carpeta en hilo/ con su pieza.json — mira el README.'),
+  );
+  hiloLista.append(li);
+} else {
+  hiloLista.append(...piezas.map(tarjetaPieza));
 }
