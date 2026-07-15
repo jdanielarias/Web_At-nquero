@@ -1,0 +1,871 @@
+/* ===========================================================================
+   EL ATÁNQUERO
+   Tienda de artesano, no nave espacial. Fondo claro, poco movimiento, las
+   mochilas mandan. Los "hilos" son eso: hilo — puntadas de costura de verdad
+   como separadores, hechas con CSS. Nada de 3D.
+   El color sale de materiales reales: fique crudo, añil, palo brasil.
+   El unico movimiento vive en Recorridos: hojas que caen y agua que respira,
+   lento y suave, para que den ganas de caminar el territorio.
+   =========================================================================== */
+
+:root {
+  --polvo: #ded9c2;
+  --papel: #ece8d8;
+  --papel-alto: #f5f2e6;
+  --tinta: #1d1a12;
+  --tinta-media: #57513e;
+  /* Oscurecido de #837c62: como texto pequeño no llegaba al 4.5:1 de WCAG. */
+  --tinta-suave: #6b6450;
+
+  /* Psicologia del color, en corto: la base tierra dice arraigo y tradicion;
+     el añil (confianza, calma) se reserva para el agua y los datos; el barro
+     (calidez, accion, arcilla de artesano) es SOLO para los botones de
+     accion — asi son lo unico caliente que salta en la pagina. */
+  --anil: #2c4a72;
+  --barro: #9c4520;
+  --brasil: #8b3a4a;
+  --monte: #4c5f3c;
+  --fique: #a8996a;
+  /* El fique de arriba es para decorar (hilos, hojas); este, mas hondo, es
+     para cuando el fique es texto — el claro no daba ni 3:1. */
+  --fique-texto: #857644;
+
+  --linea: rgba(29, 26, 18, 0.15);
+  --linea-fuerte: rgba(29, 26, 18, 0.28);
+
+  --display: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --texto: 'Karla Variable', system-ui, sans-serif;
+
+  --marco: clamp(1.25rem, 5vw, 4.5rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--papel);
+  color: var(--tinta);
+  font-family: var(--texto);
+  font-size: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--anil);
+  outline-offset: 3px;
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.saltar {
+  position: absolute;
+  top: -100px;
+  left: var(--marco);
+  z-index: 60;
+  background: var(--tinta);
+  color: var(--papel-alto);
+  padding: 0.7rem 1.1rem;
+  font-size: 0.8rem;
+  text-decoration: none;
+}
+.saltar:focus {
+  top: 0.6rem;
+}
+
+/* --- tipografia ---------------------------------------------------------- */
+.display {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 48;
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.etiqueta {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* ===========================================================================
+   HILO — la unica "decoracion", y es literal: una puntada de costura.
+   Un pespunte: tramo de hilo, hueco, tramo de hilo. Como una costura a mano.
+   =========================================================================== */
+.costura {
+  height: 2px;
+  border: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--linea-fuerte) 0 10px,
+    transparent 10px 18px
+  );
+}
+
+/* El hilo que baja por el borde de una tarjeta: la mochila se teje en vertical
+   y el catalogo lo repite. */
+.hilo-lateral {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background-image: repeating-linear-gradient(
+    180deg,
+    var(--fique) 0 8px,
+    transparent 8px 15px
+  );
+}
+
+/* ===========================================================================
+   ESTRUCTURA
+   =========================================================================== */
+.seccion {
+  padding: clamp(3.5rem, 8vw, 6.5rem) var(--marco);
+  /* El nav esta pegado arriba: sin esto, saltar con los enlaces del menu deja
+     el rotulo escondido debajo. En movil el nav ocupa dos filas, por eso el
+     margen se mide contra su alto real y no contra un numero fijo. */
+  scroll-margin-top: calc(var(--alto-nav, 3.5rem) + 1rem);
+}
+.seccion + .seccion {
+  padding-top: 0;
+}
+.limite {
+  max-width: 74rem;
+  margin-inline: auto;
+}
+
+.rotulo {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+}
+.rotulo .paso {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 14;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--brasil);
+}
+.rotulo .nombre {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+.rotulo .regla {
+  flex: 1;
+  height: 2px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--linea-fuerte) 0 10px,
+    transparent 10px 18px
+  );
+}
+
+.titulo {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 72;
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4.4vw, 3.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+.titulo em {
+  font-style: normal;
+  font-weight: 300;
+  color: var(--brasil);
+}
+
+.parrafo {
+  max-width: 56ch;
+  color: var(--tinta-media);
+}
+.parrafo + .parrafo {
+  margin-top: 0.9rem;
+}
+
+/* ===========================================================================
+   CHIPIRE — el texto a la izquierda y, al frente, un chipire tejiendose:
+   el hilo se dibuja en espiral desde el punto (stroke-dashoffset), sostiene
+   la mochila un momento y vuelve a empezar. pathLength=1000 normaliza el
+   largo real del trazo para no calcularlo a mano.
+   =========================================================================== */
+.chipire-reja {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+  margin-top: 1.1rem;
+}
+@media (max-width: 52rem) {
+  .chipire-reja {
+    grid-template-columns: 1fr;
+  }
+  .chipire-dibujo {
+    max-width: 13rem;
+    margin-inline: auto;
+  }
+}
+.chipire-dibujo {
+  margin: 0;
+}
+.chipire-dibujo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.chipire-dibujo figcaption {
+  margin-top: 0.6rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+/* La guia (dentro de la mascara) es la que se dibuja; el hilo punteado solo
+   se desvanece al final del ciclo. Las dos duran lo mismo para ir a compas. */
+.chipire-guia {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: tejer 10s linear infinite;
+}
+@keyframes tejer {
+  0%   { stroke-dashoffset: 1000; }
+  72%  { stroke-dashoffset: 0; }
+  94%  { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 1000; }
+}
+.chipire-hilo {
+  animation: apagar-hilo 10s linear infinite;
+}
+@keyframes apagar-hilo {
+  0%   { opacity: 1; }
+  86%  { opacity: 1; }
+  94%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* ===========================================================================
+   NAV
+   =========================================================================== */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 1rem;
+  padding: 0.9rem var(--marco);
+  background: var(--papel);
+  border-bottom: 1px solid var(--linea);
+}
+.nav-marca {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 14;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-decoration: none;
+}
+.nav-lista {
+  display: flex;
+  gap: 1.5rem;
+  list-style: none;
+}
+.nav-lista a {
+  font-size: 0.82rem;
+  text-decoration: none;
+  color: var(--tinta-media);
+}
+.nav-lista a:hover {
+  color: var(--tinta);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+/* En movil los enlaces pasan a una segunda fila en vez de desaparecer. Son
+   cuatro y cortos: esconderlos detras de una hamburguesa seria esconder toda
+   la navegacion del sitio a cambio de nada. */
+@media (max-width: 44rem) {
+  .nav {
+    justify-content: flex-start;
+  }
+  .nav-lista {
+    flex-basis: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .nav-lista a {
+    font-size: 0.78rem;
+  }
+}
+
+/* ===========================================================================
+   PORTADA
+   =========================================================================== */
+.portada {
+  /* Sin padding abajo: la silueta de la Sierra cierra la portada al ras. */
+  padding: clamp(3rem, 8vw, 6rem) var(--marco) 0;
+}
+.sierra {
+  display: block;
+  /* Se sale del marco para ir de borde a borde, como un horizonte. */
+  width: calc(100% + 2 * var(--marco));
+  margin: clamp(2.5rem, 6vw, 4rem) calc(-1 * var(--marco)) 0;
+  height: clamp(5rem, 14vw, 10rem);
+}
+.portada-reja {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: end;
+}
+@media (max-width: 52rem) {
+  .portada-reja {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+.portada h1 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 96;
+  font-weight: 700;
+  font-size: clamp(2.8rem, 8vw, 5.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+}
+.portada h1 span {
+  display: block;
+  font-weight: 300;
+  color: var(--fique-texto);
+}
+.portada-sub {
+  max-width: 42ch;
+  color: var(--tinta-media);
+  font-size: 1.05rem;
+}
+.portada-datos {
+  display: grid;
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+}
+.portada-datos div {
+  background: var(--papel-alto);
+  padding: 1.1rem 1.25rem;
+}
+.portada-datos dt {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+  margin-bottom: 0.3rem;
+}
+.portada-datos dd {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 32;
+  font-weight: 700;
+  font-size: 1.6rem;
+  line-height: 1.1;
+}
+.portada-datos dd small {
+  display: block;
+  font-family: var(--texto);
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: var(--tinta-media);
+  margin-top: 0.3rem;
+  line-height: 1.45;
+}
+
+/* ===========================================================================
+   CATALOGO
+   =========================================================================== */
+.catalogo {
+  display: grid;
+  /* auto-fit y no auto-fill: con auto-fill quedan columnas vacias reservadas a
+     la derecha cuando hay menos mochilas que huecos. */
+  grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  list-style: none;
+}
+
+.mochila {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--papel-alto);
+  border: 1px solid var(--linea);
+  padding-left: 0.9rem;
+}
+
+.mochila-foto {
+  aspect-ratio: 4 / 5;
+  background: var(--polvo);
+  overflow: hidden;
+  position: relative;
+}
+.mochila-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Sin foto todavia: un hueco honesto, no un placeholder gris de plantilla. */
+.sin-foto {
+  height: 100%;
+  display: grid;
+  place-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 1rem;
+  color: var(--tinta-suave);
+  font-size: 0.78rem;
+  background-image: repeating-linear-gradient(
+    135deg,
+    transparent 0 11px,
+    rgba(29, 26, 18, 0.05) 11px 13px
+  );
+}
+.sin-foto code {
+  font-size: 0.72rem;
+  color: var(--brasil);
+  word-break: break-all;
+}
+
+.mochila-cuerpo {
+  padding: 1.1rem 1.2rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.6rem;
+}
+.mochila-cuerpo h3 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 24;
+  font-weight: 700;
+  font-size: 1.25rem;
+  line-height: 1.1;
+}
+.mochila-historia {
+  color: var(--tinta-media);
+  font-size: 0.9rem;
+}
+.mochila-ficha {
+  list-style: none;
+  font-size: 0.82rem;
+  color: var(--tinta-suave);
+}
+.mochila-ficha li::before {
+  content: '— ';
+}
+.mochila-precio {
+  font-weight: 700;
+}
+.mochila-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+.marca {
+  align-self: flex-start;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid currentColor;
+}
+.marca.disponible {
+  color: var(--monte);
+}
+.marca.vendida {
+  color: var(--tinta-suave);
+}
+
+/* --- botones -------------------------------------------------------------- */
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-family: var(--texto);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  text-decoration: none;
+  border: 1px solid var(--linea-fuerte);
+  background: transparent;
+  color: var(--tinta);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+.boton:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+  color: var(--papel-alto);
+}
+.boton.solido {
+  background: var(--barro);
+  border-color: var(--barro);
+  color: var(--papel-alto);
+}
+.boton.solido:hover {
+  background: var(--tinta);
+  border-color: var(--tinta);
+}
+.boton.grande {
+  padding: 0.85rem 1.4rem;
+  font-size: 0.9rem;
+}
+.boton[aria-disabled='true'],
+.boton:disabled {
+  opacity: 0.42;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   RECORRIDOS
+   La seccion con el unico movimiento del sitio: hojas del monte que caen
+   despacio y una franja de agua que respira alrededor del boton de agendar.
+   Todo lento (ciclos de 9-30s) y con opacidades bajas: debe sentirse como
+   sombra de arbol, no como animacion de landing.
+   =========================================================================== */
+#gasa {
+  position: relative;
+  overflow: hidden;
+}
+#gasa .limite {
+  position: relative;
+  z-index: 1;
+}
+
+/* --- hojas que caen ------------------------------------------------------- */
+.hojas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.hoja {
+  position: absolute;
+  top: -3rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  /* Un leve degrade para que la hoja tenga haz y enves. */
+  background: linear-gradient(135deg, var(--monte), #6c7f55);
+  /* Dos esquinas redondas y dos en punta: silueta de hoja sin imagenes. */
+  border-radius: 0 70% 0 70%;
+  opacity: 0;
+  animation: hoja-cae var(--dura, 20s) linear infinite;
+  animation-delay: var(--espera, 0s);
+}
+/* Cada hoja con su ritmo, tamaño y tono, para que no se vea el truco. */
+.hoja:nth-child(1) { left: 8%;  --dura: 21s; --espera: 0s;   }
+.hoja:nth-child(2) { left: 26%; --dura: 26s; --espera: -9s;  width: 0.9rem; height: 0.9rem; background: linear-gradient(135deg, var(--fique), #8a7c50); }
+.hoja:nth-child(3) { left: 45%; --dura: 19s; --espera: -14s; width: 1.3rem; height: 1.3rem; }
+.hoja:nth-child(4) { left: 61%; --dura: 29s; --espera: -4s;  width: 1.45rem; height: 1.45rem; }
+.hoja:nth-child(5) { left: 78%; --dura: 23s; --espera: -18s; background: linear-gradient(135deg, var(--fique), #8a7c50); }
+.hoja:nth-child(6) { left: 92%; --dura: 27s; --espera: -12s; width: 0.95rem; height: 0.95rem; }
+.hoja:nth-child(7) { left: 16%; --dura: 24s; --espera: -20s; width: 1.35rem; height: 1.35rem; }
+.hoja:nth-child(8) { left: 36%; --dura: 28s; --espera: -7s;  background: linear-gradient(135deg, var(--fique), #8a7c50); }
+.hoja:nth-child(9) { left: 70%; --dura: 22s; --espera: -16s; width: 1.2rem; height: 1.2rem; }
+
+@keyframes hoja-cae {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 0; }
+  6%   { opacity: 0.55; }
+  25%  { transform: translate3d(3rem, 24vh, 0) rotate(80deg); }
+  50%  { transform: translate3d(-2.2rem, 48vh, 0) rotate(150deg); }
+  75%  { transform: translate3d(2.6rem, 72vh, 0) rotate(230deg); }
+  90%  { opacity: 0.55; }
+  100% { transform: translate3d(-1.2rem, 96vh, 0) rotate(310deg); opacity: 0; }
+}
+
+/* --- la franja de agua con el boton de agendar ---------------------------- */
+.rio {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  /* Mas aire abajo: ahi vive el agua y no debe tocar el boton. */
+  padding: clamp(1.4rem, 3vw, 2rem) clamp(1.4rem, 3vw, 2rem) clamp(3.4rem, 6vw, 4.2rem);
+  border: 1px solid var(--linea);
+  background: linear-gradient(180deg, var(--papel-alto) 45%, rgba(44, 74, 114, 0.14));
+  overflow: hidden;
+}
+.rio > * {
+  position: relative;
+  z-index: 1;
+}
+.rio-texto {
+  max-width: 46ch;
+  color: var(--tinta-media);
+}
+/* El agua es de rio, no de mar: hilos de corriente — lineas quebradas que
+   viajan todas en el mismo sentido, a dos velocidades, como el Guatapurí
+   bajando. Nada de olas. */
+.rio::before,
+.rio::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-position: 0 bottom;
+}
+.rio::before {
+  height: 3rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 40' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%232c4a72' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M0 12 q12 -6 25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0' stroke-opacity='0.34' stroke-dasharray='18 14'/%3E%3Cpath d='M0 30 q12 6 25 0 t25 0 t25 0 t25 0 t25 0 t25 0 t25 0' stroke-opacity='0.22' stroke-dasharray='12 16'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 15rem 100%;
+  animation: correr-hondo 16s linear infinite;
+}
+.rio::after {
+  height: 2rem;
+  bottom: 0.35rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 30' preserveAspectRatio='none'%3E%3Cg fill='none' stroke='%232c4a72' stroke-width='1.4' stroke-linecap='round'%3E%3Cpath d='M0 10 q10 -5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0' stroke-opacity='0.28' stroke-dasharray='14 10'/%3E%3Cpath d='M0 22 q10 5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0 t20 0' stroke-opacity='0.18' stroke-dasharray='9 13'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 11rem 100%;
+  animation: correr-superficie 9s linear infinite;
+}
+/* El mismo sentido las dos: los rios no van y vuelven. La de la superficie
+   corre mas rapido que la del fondo y eso es lo que se lee como corriente. */
+@keyframes correr-hondo {
+  to { background-position-x: 15rem; }
+}
+@keyframes correr-superficie {
+  to { background-position-x: 11rem; }
+}
+
+/* Los manantiales: puntos donde el agua nace y respira en ondas que se
+   abren y se apagan, como un ojo de agua entre las piedras. */
+.rio .manantial {
+  position: absolute;
+  z-index: 0;
+  width: 7px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(44, 74, 114, 0.45);
+}
+.rio .manantial:nth-of-type(1) {
+  left: 17%;
+  bottom: 1.5rem;
+}
+.rio .manantial:nth-of-type(2) {
+  left: 56%;
+  bottom: 2.2rem;
+}
+.manantial::before,
+.manantial::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(44, 74, 114, 0.5);
+  opacity: 0;
+  animation: manar 5.5s ease-out infinite;
+}
+.manantial::after {
+  animation-delay: 2.75s;
+}
+.rio .manantial:nth-of-type(2)::before {
+  animation-delay: 1.4s;
+}
+.rio .manantial:nth-of-type(2)::after {
+  animation-delay: 4.1s;
+}
+@keyframes manar {
+  0%   { transform: scale(1); opacity: 0.7; }
+  100% { transform: scale(16, 9); opacity: 0; }
+}
+
+/* Ondas como cuando cae una piedra al agua, alrededor del boton. */
+.ondas {
+  position: relative;
+}
+.ondas::before,
+.ondas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(44, 74, 114, 0.5);
+  opacity: 0;
+  animation: onda 6s ease-out infinite;
+  pointer-events: none;
+}
+.ondas::after {
+  animation-delay: 3s;
+}
+@keyframes onda {
+  0%   { transform: scale(1); opacity: 0; }
+  10%  { opacity: 0.5; }
+  55%  { transform: scale(1.22, 1.75); opacity: 0; }
+  100% { transform: scale(1.22, 1.75); opacity: 0; }
+}
+
+.tours {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1px;
+  background: var(--linea);
+  border: 1px solid var(--linea);
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0;
+}
+.tour {
+  background: var(--papel-alto);
+  padding: clamp(1.3rem, 2.5vw, 1.8rem);
+}
+.tour h3 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 20;
+  font-weight: 700;
+  font-size: 1.15rem;
+  line-height: 1.15;
+  margin: 0.5rem 0 0.4rem;
+}
+.tour p {
+  color: var(--tinta-media);
+  font-size: 0.9rem;
+}
+.tour .quien {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--anil);
+}
+
+/* ===========================================================================
+   CIERRE
+   =========================================================================== */
+.cierre-reja {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: end;
+}
+@media (max-width: 44rem) {
+  .cierre-reja {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+}
+.redes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.2rem;
+}
+.redes a {
+  font-size: 0.82rem;
+  text-decoration: none;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--linea);
+}
+.redes a:hover {
+  border-color: var(--anil);
+  background: var(--papel-alto);
+}
+
+.aviso {
+  margin-top: 2rem;
+  border: 1px dashed var(--linea-fuerte);
+  padding: 1rem 1.15rem;
+  font-size: 0.86rem;
+  color: var(--tinta-media);
+  max-width: 64ch;
+}
+.aviso b {
+  color: var(--brasil);
+}
+.aviso code {
+  background: var(--polvo);
+  padding: 0.05em 0.35em;
+}
+
+.pie {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  padding: 1.1rem 0 0;
+  border-top: 1px solid var(--linea);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--tinta-suave);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  /* Las animaciones infinitas no basta con acortarlas: se apagan. Las hojas
+     ademas se esconden porque su estado de reposo es invisible. */
+  .hoja,
+  .rio::before,
+  .rio::after,
+  .ondas::before,
+  .ondas::after,
+  .manantial::before,
+  .manantial::after,
+  .chipire-guia,
+  .chipire-hilo {
+    animation: none !important;
+  }
+  .hoja {
+    display: none;
+  }
+  /* Sin movimiento, el chipire se muestra ya tejido. */
+  .chipire-guia {
+    stroke-dashoffset: 0;
+  }
+}
