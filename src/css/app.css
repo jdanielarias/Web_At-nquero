@@ -502,6 +502,73 @@ a {
   list-style: none;
 }
 
+/* Los tres tipos de mochila en la principal: una probadita del catalogo
+   antes de pasar a mochilas.html. Mismo marco y mismo pie que las demas
+   fotos del sitio. */
+.tipos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+@media (max-width: 44rem) {
+  .tipos {
+    grid-template-columns: 1fr;
+  }
+}
+.tipo {
+  margin: 0;
+}
+.tipo-foto {
+  aspect-ratio: 4 / 3;
+  background: var(--polvo);
+  border: 1px solid var(--linea);
+  overflow: hidden;
+}
+.tipo-foto img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.tipo figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
+/* La entrada de mochilas.html: texto a la izquierda y las manos tejiendo al
+   lado, para que el titulo no quede con la mitad derecha vacia. */
+.mochilas-reja {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+.manos-foto {
+  margin: 0;
+}
+@media (max-width: 52rem) {
+  .mochilas-reja {
+    grid-template-columns: 1fr;
+  }
+  .manos-foto {
+    max-width: 24rem;
+    margin-inline: auto;
+  }
+}
+.manos-foto figcaption {
+  margin-top: 0.6rem;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--tinta-suave);
+}
+
 .mochila {
   position: relative;
   display: flex;

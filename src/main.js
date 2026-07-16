@@ -16,9 +16,15 @@ const medirNav = () =>
 medirNav();
 addEventListener('resize', medirNav);
 
-$('#waTour').href = wa('Hola Enosh, quiero cuadrar un recorrido por Atánquez.');
-$('#waPie').href = wa('Hola Enosh, quiero más información.');
-$('#waNav').href = wa('Hola Enosh, quiero más información.');
+// El mismo script sirve a la principal y a mochilas.html: cada enlace y cada
+// lista solo se tocan si existen en la pagina.
+const enlaceWa = (sel, mensaje) => {
+  const el = $(sel);
+  if (el) el.href = wa(mensaje);
+};
+enlaceWa('#waTour', 'Hola Enosh, quiero cuadrar un recorrido por Atánquez.');
+enlaceWa('#waPie', 'Hola Enosh, quiero más información.');
+enlaceWa('#waNav', 'Hola Enosh, quiero más información.');
 
 const mochilas = cargarMochilas();
 const lista = $('#catalogo');
@@ -117,15 +123,17 @@ function tarjeta(m) {
   return li;
 }
 
-if (!mochilas.length) {
-  const li = document.createElement('li');
-  li.className = 'aviso';
-  li.append(
-    texto('Todavía no hay mochilas. Crea una carpeta en mochilas/ con su mochila.json — mira el README.'),
-  );
-  lista.append(li);
-} else {
-  lista.append(...mochilas.map(tarjeta));
+if (lista) {
+  if (!mochilas.length) {
+    const li = document.createElement('li');
+    li.className = 'aviso';
+    li.append(
+      texto('Todavía no hay mochilas. Crea una carpeta en mochilas/ con su mochila.json — mira el README.'),
+    );
+    lista.append(li);
+  } else {
+    lista.append(...mochilas.map(tarjeta));
+  }
 }
 
 // --- el hilo: videos y fotos que se van sumando --------------------------
@@ -202,13 +210,15 @@ function tarjetaPieza(pz) {
   return li;
 }
 
-if (!piezas.length) {
-  const li = document.createElement('li');
-  li.className = 'aviso';
-  li.append(
-    texto('Todavía no hay videos ni fotos. Crea una carpeta en hilo/ con su pieza.json — mira el README.'),
-  );
-  hiloLista.append(li);
-} else {
-  hiloLista.append(...piezas.map(tarjetaPieza));
+if (hiloLista) {
+  if (!piezas.length) {
+    const li = document.createElement('li');
+    li.className = 'aviso';
+    li.append(
+      texto('Todavía no hay videos ni fotos. Crea una carpeta en hilo/ con su pieza.json — mira el README.'),
+    );
+    hiloLista.append(li);
+  } else {
+    hiloLista.append(...piezas.map(tarjetaPieza));
+  }
 }

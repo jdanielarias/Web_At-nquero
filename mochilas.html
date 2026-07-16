@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mochilas kankuamas en venta — El Atánquero Explora</title>
+    <meta
+      name="description"
+      content="Mochilas kankuamas tejidas a mano en Atánquez, en fique y lana de oveja, teñidas con plantas del monte. Cada una lleva el nombre de su tejedora — pregunta por la tuya por WhatsApp."
+    />
+    <meta name="theme-color" content="#ece8d8" />
+  </head>
+  <body>
+    <!-- Hojas del monte que caen por toda la pagina, detras del contenido. -->
+    <div class="hojas" aria-hidden="true">
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+      <span class="hoja"></span>
+    </div>
+
+    <a class="saltar" href="#cuerpo">Saltar al contenido</a>
+
+    <nav class="nav">
+      <a class="nav-marca" href="./index.html">
+        <img class="nav-logo" src="./fotos_recorrido/web/enosh-logo.png" alt="" />
+        El Atánquero Explora
+      </a>
+      <ul class="nav-lista">
+        <li><a href="./index.html#chipire">Quién es</a></li>
+        <li><a href="./index.html#gasa">Recorridos</a></li>
+        <li><a href="./mochilas.html" aria-current="page">Mochilas</a></li>
+        <li><a href="./index.html#hilo">Videos</a></li>
+        <li><a href="./index.html#boca">Escribir</a></li>
+      </ul>
+      <a class="boton solido nav-contacto" id="waNav" href="#" target="_blank" rel="noopener">Contáctame</a>
+    </nav>
+
+    <!-- ===================== CUERPO (catálogo en venta) ===================== -->
+    <!-- Esta pagina es el cuerpo de la mochila: aqui suben todos los dibujos.
+         Lleva la misma espiral del rotulo "Cuerpo" de la principal. -->
+    <section class="seccion" id="cuerpo">
+      <div class="limite">
+        <div class="rotulo">
+          <span class="paso" aria-hidden="true">
+            <svg viewBox="-15 -13 30 27">
+              <circle cx="0" cy="0" r="2.8" fill="var(--brasil)" />
+              <path
+                fill="none"
+                stroke="var(--brasil)"
+                stroke-width="2"
+                stroke-linecap="round"
+                d="M0 0 A4 4 0 0 1 8 0"
+              />
+            </svg>
+          </span>
+          <span class="nombre">Cuerpo</span>
+          <span class="regla"></span>
+        </div>
+        <h1 class="titulo">Cada mochila es <em>pensamiento tejido</em></h1>
+        <div class="mochilas-reja">
+          <div>
+            <p class="parrafo" style="margin-top: 1.1rem">
+              Así lo dicen las tejedoras: tejer es tejer el pensamiento. El cuerpo de la
+              mochila es donde suben los dibujos, puntada por puntada, sin patrón impreso —
+              van en la cabeza de quien teje y cuentan de qué familia viene: el caracol, el
+              peine, los cerritos. La fibra — fique o lana de oveja — se tiñe con lo que da
+              el monte: dividivi, batatilla, palo brasil.
+            </p>
+            <p class="parrafo">
+              Los dibujos tienen su orden: con el cerro se aprende, y de ahí se pasa al
+              caracol — el pensamiento de la mujer —, a la cocada — el del hombre — y al
+              camino, que es el que sube a la Sierra. El fique lo alistan los hombres; las
+              mujeres lo hilan y lo tejen, muchas veces juntas, porque tejer en compañía
+              también teje la vecindad y el comadrazgo.
+            </p>
+          </div>
+          <!-- Cuando este la foto, guardala con este nombre y cambia el
+               .sin-foto por el <img> comentado. -->
+          <figure class="manos-foto">
+            <div class="tipo-foto">
+              <!-- <img src="./fotos_recorrido/web/manos-tejiendo.jpg" alt="Manos de una tejedora kankuama subiendo el cuerpo de una mochila" loading="lazy" /> -->
+              <div class="sin-foto">
+                <p>Falta la foto</p>
+                <code>fotos_recorrido/web/manos-tejiendo.jpg</code>
+              </div>
+            </div>
+            <figcaption>El pensamiento, puntada por puntada</figcaption>
+          </figure>
+        </div>
+
+        <ul class="catalogo" id="catalogo"></ul>
+      </div>
+    </section>
+
+    <!-- ===================== CIERRE ===================== -->
+    <section class="seccion">
+      <div class="limite">
+        <div class="cierre-reja">
+          <div>
+            <h2 class="titulo">Una mochila también <em>se encarga</em></h2>
+            <p class="parrafo" style="margin-top: 1.1rem">
+              En Atánquez las mochilas también se tejen por encargo: me dices el tamaño, la
+              fibra y los colores, y una tejedora la levanta desde el chipire para ti. Eso sí,
+              a su tiempo — una mochila no se apura. Escríbeme y la vamos cuadrando.
+            </p>
+          </div>
+          <div class="cierre-firma">
+            <img
+              class="cierre-logo"
+              src="./fotos_recorrido/web/enosh-logo.png"
+              alt="Logo de El Atánquero Explora"
+              loading="lazy"
+            />
+            <a class="boton solido grande" id="waPie" href="#">Escríbeme por WhatsApp</a>
+          </div>
+        </div>
+
+        <div class="pie">
+          <span>El Atánquero Explora · Atánquez, Sierra Nevada de Santa Marta</span>
+          <span>© 2026</span>
+        </div>
+      </div>
+    </section>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
