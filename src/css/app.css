@@ -171,12 +171,15 @@ a {
   gap: 0.9rem;
   margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
 }
+/* El paso del tejido: la espiral del chipire, que gana una vuelta por
+   seccion. La caja del svg es igual en todas para que la fila no baile
+   aunque la espiral crezca. */
 .rotulo .paso {
-  font-family: var(--display);
-  font-variation-settings: 'wdth' 85, 'opsz' 14;
-  font-weight: 700;
-  font-size: 0.8rem;
-  color: var(--brasil);
+  display: inline-flex;
+}
+.rotulo .paso svg {
+  width: 1.5rem;
+  height: 1.35rem;
 }
 .rotulo .nombre {
   font-size: 0.72rem;
