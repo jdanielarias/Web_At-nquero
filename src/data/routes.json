@@ -96,7 +96,6 @@
         ]
       ]
     },
-    "fotos": ["./fotos_recorrido/web/rio-guatapuri.jpg"],
     "es_prueba": true
   },
   {
@@ -192,7 +191,6 @@
         ]
       ]
     },
-    "fotos": [],
     "es_prueba": true
   }
 ]

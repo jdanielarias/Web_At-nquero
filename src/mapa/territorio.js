@@ -240,22 +240,7 @@ function mostrarRuta(panel, ruta) {
   panel.append(el('h3', null, ruta.nombre));
   if (ruta.descripcion_corta) panel.append(el('p', 'mapa-panel-desc', ruta.descripcion_corta));
 
-  // Las fotos grandes y enteras, con los datos en columna a su lado: asi
-  // todo se ve de una, sin deslizar.
-  const cuerpo = el('div', 'mapa-panel-cuerpo');
-
-  if (ruta.fotos.length) {
-    const fotos = el('div', 'mapa-panel-fotos');
-    for (const src of ruta.fotos) {
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = `Foto del recorrido ${ruta.nombre}`;
-      img.loading = 'lazy';
-      fotos.append(img);
-    }
-    cuerpo.append(fotos);
-  }
-
+  // Solo los datos del recorrido, para que el mapa quede limpio.
   const datos = el('dl', 'mapa-panel-datos');
   const dato = (titulo, valor) => {
     if (!valor) return;
@@ -267,9 +252,7 @@ function mostrarRuta(panel, ruta) {
   dato('Desnivel', `+${ruta.desnivel_m} m`);
   dato('Dificultad', ruta.dificultad);
   dato('Duración', ruta.duracion_estimada);
-  cuerpo.append(datos);
-
-  panel.append(cuerpo);
+  panel.append(datos);
 
   const boton = el('a', 'boton solido', 'Agendar este recorrido');
   boton.href = wa(`Hola Enosh, quiero agendar el recorrido: ${ruta.nombre}.`);
