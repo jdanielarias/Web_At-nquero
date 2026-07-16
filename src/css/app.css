@@ -568,10 +568,11 @@ a {
 
 /* ===========================================================================
    RECORRIDOS
-   La seccion con el unico movimiento del sitio: hojas del monte que caen
-   despacio y una franja de agua que respira alrededor del boton de agendar.
-   Todo lento (ciclos de 9-30s) y con opacidades bajas: debe sentirse como
-   sombra de arbol, no como animacion de landing.
+   El movimiento del sitio: hojas del monte que caen despacio por toda la
+   pagina (el bloque .hojas vive al inicio del body) y una franja de agua
+   que corre alrededor del boton de agendar. Todo lento (ciclos de 9-30s) y
+   con opacidades bajas: debe sentirse como sombra de arbol, no como
+   animacion de landing.
    =========================================================================== */
 #gasa {
   position: relative;
@@ -583,9 +584,12 @@ a {
 }
 
 /* --- hojas que caen ------------------------------------------------------- */
+/* Caen por toda la pagina: fijas al viewport y con z-index negativo para que
+   pasen por detras del texto y de las tarjetas, sobre el papel del fondo. */
 .hojas {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: -1;
   pointer-events: none;
 }
 .hoja {
@@ -619,7 +623,7 @@ a {
   50%  { transform: translate3d(-2.2rem, 48vh, 0) rotate(150deg); }
   75%  { transform: translate3d(2.6rem, 72vh, 0) rotate(230deg); }
   90%  { opacity: 0.55; }
-  100% { transform: translate3d(-1.2rem, 96vh, 0) rotate(310deg); opacity: 0; }
+  100% { transform: translate3d(-1.2rem, 106vh, 0) rotate(310deg); opacity: 0; }
 }
 
 /* --- la franja de agua con el boton de agendar ---------------------------- */
