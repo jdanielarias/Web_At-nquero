@@ -351,6 +351,9 @@ a {
   font-size: 0.82rem;
   text-decoration: none;
   color: var(--tinta-media);
+  /* Con seis enlaces el menu de movil puede partirse en dos filas: que se
+     parta entre enlaces, nunca por la mitad de "Quién es". */
+  white-space: nowrap;
 }
 .nav-lista a:hover {
   color: var(--tinta);
@@ -386,14 +389,18 @@ a {
    PORTADA
    =========================================================================== */
 .portada {
-  /* Sin padding abajo: la silueta de la Sierra cierra la portada al ras. */
-  padding: clamp(3rem, 8vw, 6rem) var(--marco) 0;
+  padding: clamp(3rem, 8vw, 6rem) var(--marco) clamp(2.5rem, 6vw, 4rem);
+  /* El cielo: un azul claro arriba que degrada hacia el papel, como el
+     amanecer sobre el territorio antes de que empiece el contenido. */
+  background: linear-gradient(180deg, #bcd4ee 0%, #d3e3f3 26%, var(--papel) 62%);
 }
 .sierra {
   display: block;
-  /* Se sale del marco para ir de borde a borde, como un horizonte. */
-  width: calc(100% + 2 * var(--marco));
-  margin: clamp(2.5rem, 6vw, 4rem) calc(-1 * var(--marco)) 0;
+  /* Ahora cierra la pagina entera: va de borde a borde, al ras del pie.
+     El margen negativo la sube para comerse el relleno inferior de la ultima
+     seccion — ese hueco en blanco sobraba. */
+  width: 100%;
+  margin: calc(1rem - clamp(3.5rem, 8vw, 6.5rem)) 0 0;
   height: clamp(5rem, 14vw, 10rem);
 }
 .portada-reja {
@@ -494,8 +501,20 @@ a {
   text-transform: uppercase;
   color: var(--tinta-suave);
 }
+/* El boton da el area de toque de 44px; el punto visible va en ::before. */
 .mapa-marcador {
-  display: block;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.mapa-marcador::before {
+  content: '';
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 50%;
@@ -503,7 +522,7 @@ a {
   border: 2px solid var(--papel-alto);
   box-shadow: 0 0 0 1px var(--linea-fuerte);
 }
-.mapa-marcador.fin {
+.mapa-marcador.fin::before {
   background: var(--brasil);
 }
 .mapa-panel {
@@ -523,7 +542,8 @@ a {
   font-variation-settings: 'wdth' 85, 'opsz' 32;
   font-size: 1.15rem;
   line-height: 1.15;
-  padding-right: 1.5rem;
+  /* Aire para que el titulo no se meta bajo el boton de cerrar de 44px. */
+  padding-right: 2rem;
 }
 .mapa-panel-desc {
   margin-top: 0.3rem;
@@ -570,17 +590,23 @@ a {
 }
 .mapa-panel .boton {
   margin-top: 0.9rem;
+  touch-action: manipulation;
 }
 .mapa-panel-cerrar {
   position: absolute;
-  top: 0.35rem;
-  right: 0.5rem;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
   border: none;
   background: none;
   font-size: 1.35rem;
   line-height: 1;
   color: var(--tinta-media);
   cursor: pointer;
+  touch-action: manipulation;
 }
 /* Los controles de maplibre, vestidos como el resto del sitio. */
 #mapa-territorio .maplibregl-ctrl-group {
@@ -1192,6 +1218,141 @@ a {
 .pieza-pie p {
   color: var(--tinta-media);
   font-size: 0.9rem;
+}
+
+/* ===========================================================================
+   PUNTADAS — las experiencias (experiencias.html)
+   Cada salida es una tarjeta: carrusel de fotos a un lado, el cuento al
+   otro. La tira se desliza con scroll-snap — el dedo manda en el celular —
+   y las flechas y los puntos son solo un empujon encima.
+   =========================================================================== */
+.experiencias {
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.experiencia {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  background: var(--papel-alto);
+  border: 1px solid var(--linea);
+  padding-left: 0.9rem;
+}
+@media (max-width: 52rem) {
+  .experiencia {
+    grid-template-columns: 1fr;
+  }
+}
+
+.exp-carrusel {
+  position: relative;
+  background: var(--polvo);
+  overflow: hidden;
+}
+.exp-tira {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  /* Sin barra: los puntos ya dicen en cual foto vas. */
+  scrollbar-width: none;
+}
+.exp-tira::-webkit-scrollbar {
+  display: none;
+}
+.exp-tira img {
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  scroll-snap-align: start;
+}
+.exp-carrusel .sin-foto {
+  aspect-ratio: 16 / 10;
+}
+
+/* Las flechas: redondas y de papel, flotando sobre la foto. */
+.exp-flecha {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--linea-fuerte);
+  border-radius: 50%;
+  background: var(--papel-alto);
+  color: var(--tinta);
+  font-size: 1.35rem;
+  line-height: 1;
+  /* El glifo ‹ se dibuja un pelo alto: bajarlo lo centra al ojo. */
+  padding-bottom: 0.2rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background 0.18s, color 0.18s;
+}
+.exp-flecha:hover {
+  background: var(--tinta);
+  color: var(--papel-alto);
+}
+.exp-flecha.atras {
+  left: 0.6rem;
+}
+.exp-flecha.alante {
+  right: 0.6rem;
+}
+
+/* Los puntos: puntadas chiquitas debajo de la foto. */
+.exp-puntos {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.55rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+}
+.exp-puntos button {
+  width: 0.55rem;
+  height: 0.55rem;
+  padding: 0;
+  border: 1px solid var(--papel-alto);
+  border-radius: 50%;
+  background: rgba(29, 26, 18, 0.45);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.exp-puntos button[aria-current='true'] {
+  background: var(--papel-alto);
+}
+
+.exp-texto {
+  padding: clamp(1.3rem, 2.5vw, 1.9rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  justify-content: center;
+}
+.exp-fecha {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--anil);
+}
+.exp-texto h3 {
+  font-family: var(--display);
+  font-variation-settings: 'wdth' 85, 'opsz' 24;
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  line-height: 1.1;
+}
+.exp-texto p {
+  color: var(--tinta-media);
+  font-size: 0.92rem;
+  max-width: 52ch;
 }
 
 /* ===========================================================================

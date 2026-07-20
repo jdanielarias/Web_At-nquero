@@ -19,8 +19,24 @@ const fotos = import.meta.glob('/mochilas/*/fotos/*.{jpg,jpeg,png,webp}', {
   query: '?url',
   import: 'default',
 });
+// Todas las imagenes de la carpeta, se llamen como se llamen: el panel de
+// administracion sube las fotos con su nombre original y lo apunta en el
+// json — este glob permite resolver esas rutas.
+const imagenes = import.meta.glob('/mochilas/*/**.{jpg,jpeg,png,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
 
 const carpeta = (ruta) => ruta.split('/')[2];
+
+// Convierte una ruta escrita en el json ("portada.jpg", "fotos/1.jpg") en la
+// URL real que dejo Vite; null si el archivo no existe.
+function desdeJson(id, ruta) {
+  if (!ruta) return null;
+  const limpia = String(ruta).replace(/^\.?\//, '');
+  return imagenes[`/mochilas/${id}/${limpia}`] ?? null;
+}
 
 // Busca en un glob la unica entrada que pertenece a esta carpeta.
 function unoDe(glob, id) {
@@ -48,8 +64,13 @@ export function cargarMochilas() {
         precio: datos.precio ?? null,
         historia: datos.historia ?? '',
         ficha: datos.ficha ?? [],
-        portada: unoDe(portadas, id),
-        fotos: todosDe(fotos, id),
+        // Manda lo que diga el json (asi trabaja el panel); si no dice nada,
+        // el archivo con nombre fijo de siempre.
+        portada: desdeJson(id, datos.portada) ?? unoDe(portadas, id),
+        fotos: (() => {
+          const declaradas = (datos.fotos ?? []).map((f) => desdeJson(id, f)).filter(Boolean);
+          return declaradas.length ? declaradas : todosDe(fotos, id);
+        })(),
       };
     })
     .sort((a, b) => {

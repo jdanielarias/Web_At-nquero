@@ -4,6 +4,7 @@ import './css/app.css';
 
 import { cargarMochilas } from './catalogo/cargar.js';
 import { cargarPiezas } from './hilo/cargar.js';
+import { cargarExperiencias } from './experiencias/cargar.js';
 import { wa } from './config.js';
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -228,5 +229,160 @@ if (hiloLista) {
     hiloLista.append(li);
   } else {
     hiloLista.append(...piezas.map(tarjetaPieza));
+  }
+}
+
+// --- experiencias: las puntadas que van quedando -------------------------
+// Cada experiencia es una tarjeta con su carrusel de fotos: la tira se
+// desliza con scroll-snap (dedo en el celular) y las flechas y puntos solo
+// aparecen cuando hay mas de una foto.
+const MESES = [
+  'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
+  'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre',
+];
+
+// "2026-06" -> "junio de 2026" y "2026-06-14" -> "14 de junio de 2026".
+function fechaBonita(fecha) {
+  const [a, m, d] = String(fecha).split('-').map(Number);
+  if (!a) return '';
+  if (d && MESES[m - 1]) return `${d} de ${MESES[m - 1]} de ${a}`;
+  if (MESES[m - 1]) return `${MESES[m - 1]} de ${a}`;
+  return String(a);
+}
+
+function carrusel(exp) {
+  const caja = document.createElement('div');
+  caja.className = 'exp-carrusel';
+
+  const tira = document.createElement('div');
+  tira.className = 'exp-tira';
+  tira.setAttribute('role', 'group');
+  tira.setAttribute('aria-label', `Fotos de ${exp.titulo}`);
+  tira.tabIndex = 0;
+
+  exp.fotos.forEach((url, i) => {
+    const img = document.createElement('img');
+    img.src = url;
+    img.alt = `${exp.titulo} — foto ${i + 1} de ${exp.fotos.length}`;
+    img.loading = i === 0 ? 'eager' : 'lazy';
+    tira.append(img);
+  });
+  caja.append(tira);
+
+  // Con una sola foto no hay nada que pasar: ni flechas ni puntos.
+  if (exp.fotos.length < 2) return caja;
+
+  const suave = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const irA = (i) => {
+    const tope = Math.max(0, Math.min(i, exp.fotos.length - 1));
+    tira.scrollTo({ left: tope * tira.clientWidth, behavior: suave ? 'smooth' : 'auto' });
+  };
+  const actual = () => Math.round(tira.scrollLeft / tira.clientWidth);
+
+  const flecha = (clase, rotulo, salto) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `exp-flecha ${clase}`;
+    b.setAttribute('aria-label', rotulo);
+    b.append(texto(clase === 'atras' ? '‹' : '›'));
+    b.addEventListener('click', () => irA(actual() + salto));
+    return b;
+  };
+  caja.append(
+    flecha('atras', 'Foto anterior', -1),
+    flecha('alante', 'Foto siguiente', 1),
+  );
+
+  const puntos = document.createElement('div');
+  puntos.className = 'exp-puntos';
+  const botones = exp.fotos.map((_, i) => {
+    const p = document.createElement('button');
+    p.type = 'button';
+    p.setAttribute('aria-label', `Ir a la foto ${i + 1}`);
+    if (i === 0) p.setAttribute('aria-current', 'true');
+    p.addEventListener('click', () => irA(i));
+    puntos.append(p);
+    return p;
+  });
+  caja.append(puntos);
+
+  // El punto encendido sigue al scroll, venga de las flechas o del dedo.
+  let espera = null;
+  tira.addEventListener('scroll', () => {
+    if (espera) return;
+    espera = requestAnimationFrame(() => {
+      espera = null;
+      const en = actual();
+      botones.forEach((p, i) =>
+        i === en ? p.setAttribute('aria-current', 'true') : p.removeAttribute('aria-current'),
+      );
+    });
+  });
+
+  return caja;
+}
+
+function tarjetaExperiencia(exp) {
+  const art = document.createElement('article');
+  art.className = 'experiencia';
+
+  const hiloLat = document.createElement('span');
+  hiloLat.className = 'hilo-lateral';
+  hiloLat.setAttribute('aria-hidden', 'true');
+  art.append(hiloLat);
+
+  if (exp.fotos.length) {
+    art.append(carrusel(exp));
+  } else {
+    const marco = document.createElement('div');
+    marco.className = 'exp-carrusel';
+    const vacio = document.createElement('div');
+    vacio.className = 'sin-foto';
+    const p = document.createElement('p');
+    p.append(texto('Faltan las fotos'));
+    const c = document.createElement('code');
+    c.append(texto(`experiencias/${exp.id}/fotos/`));
+    vacio.append(p, c);
+    marco.append(vacio);
+    art.append(marco);
+  }
+
+  const cuerpo = document.createElement('div');
+  cuerpo.className = 'exp-texto';
+
+  const cuando = [fechaBonita(exp.fecha), exp.lugar].filter(Boolean).join(' · ');
+  if (cuando) {
+    const sp = document.createElement('span');
+    sp.className = 'exp-fecha';
+    sp.append(texto(cuando));
+    cuerpo.append(sp);
+  }
+
+  const h3 = document.createElement('h3');
+  h3.append(texto(exp.titulo));
+  cuerpo.append(h3);
+
+  if (exp.descripcion) {
+    const p = document.createElement('p');
+    p.append(texto(exp.descripcion));
+    cuerpo.append(p);
+  }
+
+  art.append(cuerpo);
+  return art;
+}
+
+const experienciasLista = $('#experiencias-lista');
+if (experienciasLista) {
+  const experiencias = cargarExperiencias();
+  if (!experiencias.length) {
+    const aviso = document.createElement('div');
+    aviso.className = 'aviso';
+    aviso.append(
+      texto('Todavía no hay experiencias. Crea una carpeta en experiencias/ con su experiencia.json — mira el README — o súbela desde el panel /admin/.'),
+    );
+    experienciasLista.append(aviso);
+  } else {
+    experienciasLista.append(...experiencias.map(tarjetaExperiencia));
   }
 }

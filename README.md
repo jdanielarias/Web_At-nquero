@@ -96,6 +96,85 @@ en la carpeta:
 
 ---
 
+## Agregar una experiencia (página "Experiencias")
+
+Funciona igual que las mochilas: cada evento o salida es una carpeta dentro de
+`experiencias/`, con sus fotos en carrusel y un cuento corto. También se puede
+crear desde el **panel de administración** (abajo), sin tocar archivos.
+
+```
+experiencias/
+  corpus-2026/                <- el nombre que quieras, sin espacios ni tildes
+    experiencia.json          <- OBLIGATORIO
+    fotos/
+      1.jpg
+      2.jpg
+```
+
+### `experiencia.json`
+
+```json
+{
+  "titulo": "Corpus Christi con el grupo de la universidad",
+  "fecha": "2026-06",
+  "lugar": "Atánquez",
+  "descripcion": "Un par de frases sobre lo que se vivió ese día.",
+  "fotos": ["fotos/1.jpg", "fotos/2.jpg"]
+}
+```
+
+- `fecha` es `"año-mes"` o `"año-mes-día"` y ordena: lo más reciente sale
+  primero. En la página se muestra bonita ("junio de 2026").
+- `lugar` es opcional.
+- `fotos` es el orden del carrusel. Si no pones la lista, entran todas las de
+  la carpeta `fotos/` ordenadas por nombre.
+- Hay una experiencia de ejemplo en `experiencias/ejemplo-borrame/`:
+  **bórrala cuando subas la primera de verdad.**
+
+---
+
+## El panel de administración (`/admin/`)
+
+Para actualizar la página sin tocar código: entra a
+`https://el-sitio.vercel.app/admin/`, inicia sesión con GitHub y edita
+experiencias, mochilas y videos con formularios. Al darle **Publicar**, el
+panel hace el commit al repositorio y Vercel despliega solo (tarda 1-2
+minutos en verse).
+
+**El panel es solo del administrador del repo.** Solo puede entrar quien
+tenga permiso de escritura en el repositorio de GitHub — hoy, únicamente el
+dueño. No agregues colaboradores al repo a menos que quieras darles el panel
+también: las novedades de Enosh se reciben por WhatsApp y se suben desde
+aquí.
+
+Es [Decap CMS](https://decapcms.org) con el backend de GitHub. No hay base de
+datos: el contenido sigue siendo estas mismas carpetas con JSON.
+
+### Dejarlo funcionando (una sola vez)
+
+1. **Crear la OAuth App en GitHub** (con la cuenta dueña del repositorio):
+   *Settings → Developer settings → OAuth Apps → New OAuth App*.
+   - **Homepage URL**: la URL del sitio en Vercel (`https://....vercel.app`)
+   - **Authorization callback URL**: la misma URL + `/api/callback`
+   - Al crearla, copia el **Client ID** y genera un **Client Secret**.
+2. **Ponerle las llaves a Vercel**: en el proyecto de Vercel,
+   *Settings → Environment Variables*, agrega:
+   - `OAUTH_GITHUB_CLIENT_ID` = el Client ID
+   - `OAUTH_GITHUB_CLIENT_SECRET` = el Client Secret
+   y vuelve a desplegar (Redeploy) para que las tome.
+
+Si algún día el sitio cambia de dominio (dominio propio), solo hay que
+actualizar las dos URL de la OAuth App en GitHub — el panel se acomoda solo.
+
+- El login vive en `api/auth.js` y `api/callback.js` (funciones de Vercel).
+- La configuración del panel (colecciones y campos) está en
+  `public/admin/index.html`.
+- Para probar el panel en el computador sin tocar GitHub: `npx decap-server`
+  en una terminal, `npm run dev` en otra, y abre
+  `http://localhost:5173/admin/`.
+
+---
+
 ## Fotos de las mochilas
 
 Con fotos normales alcanza. Cómo salen bien:
@@ -165,6 +244,10 @@ que solo Enosh puede dar.
   `import.meta.glob`. Ahí está la magia de "no tocar código".
 - `src/hilo/cargar.js` — lo mismo pero para `hilo/`: los videos de YouTube
   y las fotos de la sección "El hilo".
+- `src/experiencias/cargar.js` — lo mismo para `experiencias/`: la página
+  de experiencias con su carrusel de fotos.
+- `public/admin/` + `api/` — el panel de administración (Decap CMS) y su
+  login con GitHub. Ver la sección del panel más arriba.
 - `src/css/app.css` — todo el diseño. La paleta sale de materiales reales:
   fique crudo, añil, palo brasil. El único movimiento del sitio está en
   Recorridos: hojas que caen y agua que se mece, en CSS puro.

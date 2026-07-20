@@ -79,8 +79,14 @@ function vestirMapa(map) {
   }
 }
 
-function marcador(map, coordenada, clase) {
-  const punto = el('span', `mapa-marcador ${clase}`);
+// El marcador es un boton con area de toque de 44px (el punto visible se
+// dibuja en CSS): tocarlo abre los datos de la ruta, que con el puro trazo
+// era muy dificil de atinar con el dedo.
+function marcador(map, coordenada, clase, etiqueta, alTocar) {
+  const punto = el('button', `mapa-marcador ${clase}`);
+  punto.type = 'button';
+  punto.setAttribute('aria-label', etiqueta);
+  punto.addEventListener('click', alTocar);
   new maplibregl.Marker({ element: punto }).setLngLat(coordenada).addTo(map);
 }
 
@@ -221,8 +227,9 @@ export function montarMapa(contenedor) {
         paint: { 'line-color': BARRO, 'line-width': 3.5 },
       });
 
-      marcador(map, coords[0], 'inicio');
-      marcador(map, coords.at(-1), 'fin');
+      const abrirRuta = () => mostrarRuta(panel, ruta);
+      marcador(map, coords[0], 'inicio', `Inicio de ${ruta.nombre}: ver los datos de la ruta`, abrirRuta);
+      marcador(map, coords.at(-1), 'fin', `Fin de ${ruta.nombre}: ver los datos de la ruta`, abrirRuta);
       animarTrazo(map, idFuente, coords);
 
       rutaPorCapa.set(idFuente, ruta);
@@ -237,10 +244,11 @@ export function montarMapa(contenedor) {
     }
 
     // El clic busca la ruta en un radio alrededor del punto tocado: un trazo
-    // de 3.5px seria imposible de atinar con el dedo.
+    // de 3.5px seria imposible de atinar con el dedo. El margen de 22px deja
+    // una zona de ~44px, el tamaño de la yema de un dedo.
     const capasRuta = [...rutaPorCapa.keys()];
     map.on('click', (e) => {
-      const margen = 8;
+      const margen = 22;
       const cerca = map.queryRenderedFeatures(
         [
           [e.point.x - margen, e.point.y - margen],
@@ -260,7 +268,9 @@ export function montarMapa(contenedor) {
           [Math.min(...lons), Math.min(...lats)],
           [Math.max(...lons), Math.max(...lats)],
         ],
-        { padding: 48, animate: false },
+        // Mas aire abajo para que los marcadores no queden bajo la barra de
+        // atribucion del mapa, que se traga el toque.
+        { padding: { top: 48, left: 48, right: 48, bottom: 80 }, animate: false },
       );
     }
   });

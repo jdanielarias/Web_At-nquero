@@ -13,8 +13,21 @@ const fotos = import.meta.glob('/hilo/*/foto.{jpg,jpeg,png,webp}', {
   query: '?url',
   import: 'default',
 });
+// Cualquier imagen de la carpeta, se llame como se llame: el panel de
+// administracion sube la foto con su nombre original y lo apunta en el json.
+const imagenes = import.meta.glob('/hilo/*/**.{jpg,jpeg,png,webp}', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
 
 const carpeta = (ruta) => ruta.split('/')[2];
+
+function desdeJson(id, ruta) {
+  if (!ruta) return null;
+  const limpia = String(ruta).replace(/^\.?\//, '');
+  return imagenes[`/hilo/${id}/${limpia}`] ?? null;
+}
 
 function unoDe(glob, id) {
   const clave = Object.keys(glob).find((k) => carpeta(k) === id);
@@ -42,7 +55,8 @@ export function cargarPiezas() {
         nota: datos.nota ?? '',
         fecha: datos.fecha ?? '',
         youtube: codigoYoutube(datos.youtube),
-        foto: unoDe(fotos, id),
+        // Manda lo que diga el json (asi trabaja el panel); si no, foto.jpg.
+        foto: desdeJson(id, datos.foto) ?? unoDe(fotos, id),
       };
     })
     .sort(
